@@ -7,65 +7,34 @@
 	},
 	"item": [
 		{
-			"name": "carga inicial",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{URLBASE}}/occupation-stats/loadInitialData",
-					"host": [
-						"{{URLBASE}}"
-					],
-					"path": [
-						"occupation-stats",
-						"loadInitialData"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "mostrar datos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Occupation-stats must be 12\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.a.lengthOf(12);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URLBASE}}/occupation-stats/Almeria/Febrero",
+					"raw": "{{URLBASE}}/occupation-stats",
 					"host": [
 						"{{URLBASE}}"
 					],
 					"path": [
-						"occupation-stats",
-						"Almeria",
-						"Febrero"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "actualizar",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"province\": \"Almeria\",\r\n    \"month\": \"jddiisiwhfosodfdsoif\",\r\n    \"traveler\": 3,\r\n    \"overnight_stay\": 3,\r\n    \"average_stay\": 3\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{URLBASE}}/occupation-stats/Almeria/Febrero",
-					"host": [
-						"{{URLBASE}}"
-					],
-					"path": [
-						"occupation-stats",
-						"Almeria",
-						"Febrero"
+						"occupation-stats"
 					]
 				}
 			},
@@ -73,6 +42,19 @@
 		},
 		{
 			"name": "post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -98,18 +80,113 @@
 			"response": []
 		},
 		{
-			"name": "Borrar por campo",
+			"name": "mostrar datos 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Occupation-stats must be 13\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.a.lengthOf(13);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
-				"method": "DELETE",
+				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URLBASE}}/occupation-stats/province",
+					"raw": "{{URLBASE}}/occupation-stats",
 					"host": [
 						"{{URLBASE}}"
 					],
 					"path": [
-						"occupation-stats",
-						"province"
+						"occupation-stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "actualizar",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"province\": \"Almeria\",\r\n    \"month\": \"jddiisiwhfosodfdsoif\",\r\n    \"traveler\": 3,\r\n    \"overnight_stay\": 3,\r\n    \"average_stay\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URLBASE}}/occupation-stats?province=aaaaaaaaaaa&month=Mesalterno25657",
+					"host": [
+						"{{URLBASE}}"
+					],
+					"path": [
+						"occupation-stats"
+					],
+					"query": [
+						{
+							"key": "province",
+							"value": "aaaaaaaaaaa"
+						},
+						{
+							"key": "month",
+							"value": "Mesalterno25657"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "mostrar datos 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URLBASE}}/occupation-stats",
+					"host": [
+						"{{URLBASE}}"
+					],
+					"path": [
+						"occupation-stats"
 					]
 				}
 			},
@@ -117,18 +194,195 @@
 		},
 		{
 			"name": "Borrar por campo valor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{URLBASE}}/occupation-stats/month/Febrero",
+					"raw": "{{URLBASE}}/occupation-stats/Almeria/jddiisiwhfosodfdsoif",
 					"host": [
 						"{{URLBASE}}"
 					],
 					"path": [
 						"occupation-stats",
-						"month",
-						"Febrero"
+						"Almeria",
+						"jddiisiwhfosodfdsoif"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "mostrar datos 4",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Occupation-stats must be 12\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.a.lengthOf(12);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URLBASE}}/occupation-stats",
+					"host": [
+						"{{URLBASE}}"
+					],
+					"path": [
+						"occupation-stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Borrar todos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{URLBASE}}/occupation-stats",
+					"host": [
+						"{{URLBASE}}"
+					],
+					"path": [
+						"occupation-stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "mostrar datos 5",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Occupation-stats must be 0\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.a.lengthOf(0);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URLBASE}}/occupation-stats",
+					"host": [
+						"{{URLBASE}}"
+					],
+					"path": [
+						"occupation-stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "carga inicial",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URLBASE}}/occupation-stats/loadInitialData",
+					"host": [
+						"{{URLBASE}}"
+					],
+					"path": [
+						"occupation-stats",
+						"loadInitialData"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "mostrar datos 6",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Occupation-stats must be 12\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.a.lengthOf(12);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URLBASE}}/occupation-stats",
+					"host": [
+						"{{URLBASE}}"
+					],
+					"path": [
+						"occupation-stats"
 					]
 				}
 			},

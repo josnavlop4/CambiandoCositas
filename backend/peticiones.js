@@ -91,11 +91,19 @@ module.exports = (app) => {
                 db.find({}, (err, docs) => {
                     if (err) {
                         response.status(500).send('Error retrieving data from database');
-                    } else if(offset < 0 || offset > limit || offset > docs.length || limit < 0 || limit > docs.length || endIndex > docs.length){
+                    } else if(offset < 0 || offset > limit || offset > docs.length || limit < 0 || limit > docs.length){
                         response.status(400).send('Bad request');
                     } else {
                         const data = docs.slice(startIndex,endIndex);
-                        response.send(data);
+                        data.map((n) => {
+                            delete n._id;
+                            return n;
+                        });
+                        if(data.length == 1){
+                            response.send(data[0]);
+                        }else{
+                            response.send(data);    
+                        }  
                     }
                 });
             }
@@ -104,9 +112,9 @@ module.exports = (app) => {
             const province = query.province;
             const month = query.month;
             const campo = query.campo;
-            const traveler = query.traveler;
-            const overnight_stay = query.overnight_stay;
-            const average_stay = query.average_stay;
+            const traveler = parseFloat(query.traveler);
+            const overnight_stay = parseFloat(query.overnight_stay);
+            const average_stay = parseFloat(query.average_stay);
 
             if (province && month) {
                 console.log(`New request to /occupation-stats?province="${province}"&month="${month}"`);
@@ -122,7 +130,15 @@ module.exports = (app) => {
                         );
                         console.log(404);
                     } else {
-                        response.send(array);
+                        array.map((n) => {
+                            delete n._id;
+                            return n;
+                        }); 
+                        if(array.length == 1){
+                            response.send(array[0]);
+                        }else{
+                            response.send(array);    
+                        }
                         console.log(`Returned ${array.length}`);
                     }
                 });
@@ -138,7 +154,15 @@ module.exports = (app) => {
                             .send(`No se encontraron datos con el campo province igual a "${province}"`);
                         console.log(404);
                     } else {
-                        response.send(array);
+                        array.map((n) => {
+                            delete n._id;
+                            return n;
+                        });
+                        if(array.length == 1){
+                            response.send(array[0]);
+                        }else{
+                            response.send(array);    
+                        } 
                         console.log(`Returned ${array.length}`);
                     }
                 });
@@ -154,7 +178,15 @@ module.exports = (app) => {
                             .send(`No se encontraron datos con el campo month igual a "${month}"`);
                         console.log(404);
                     } else {
-                        response.send(array);
+                        array.map((n) => {
+                            delete n._id;
+                            return n;
+                        }); 
+                        if(array.length == 1){
+                            response.send(array[0]);
+                        }else{
+                            response.send(array);    
+                        } 
                         console.log(`Returned ${array.length}`);
                     }
                 });
@@ -169,7 +201,16 @@ module.exports = (app) => {
                             response.status(404).send(`No se encontraron datos con el campo "${campo}"`);
                         } else {
                             const lc = docs.map((doc) => doc[campo]);
-                            response.send(lc);
+                            lc.map((n) => {
+                                delete n._id;
+                                return n;
+                            });
+                            if(lc.length == 1){
+                                response.send(lc[0]);
+                            }else{
+                                response.send(lc);    
+                            }
+                            console.log(`Returned ${lc.length}`);
                         }
                     }
                 });
@@ -185,7 +226,15 @@ module.exports = (app) => {
                             .send(`No se encontraron datos con el campo traveler igual a "${traveler}"`);
                         console.log(404);
                     } else {
-                        response.send(array);
+                        array.map((n) => {
+                            delete n._id;
+                            return n;
+                        });
+                        if(array.length == 1){
+                            response.send(array[0]);
+                        }else{
+                            response.send(array);    
+                        } 
                         console.log(`Returned ${array.length}`);
                     }
                 });
@@ -201,7 +250,15 @@ module.exports = (app) => {
                             .send(`No se encontraron datos con el campo overnight_stay igual a "${overnight_stay}"`);
                         console.log(404);
                     } else {
-                        response.send(array);
+                        array.map((n) => {
+                            delete n._id;
+                            return n;
+                        });
+                        if(array.length == 1){
+                            response.send(array[0]);
+                        }else{
+                            response.send(array);    
+                        }
                         console.log(`Returned ${array.length}`);
                     }
                 });
@@ -217,7 +274,15 @@ module.exports = (app) => {
                             .send(`No se encontraron datos con el campo average_stay igual a "${average_stay}"`);
                         console.log(404);
                     } else {
-                        response.send(array);
+                        array.map((n) => {
+                            delete n._id;
+                            return n;
+                        });
+                        if(array.length == 1){
+                            response.send(array[0]);
+                        }else{
+                            response.send(array);    
+                        }
                         console.log(`Returned ${array.length}`);
                     }
                 });
@@ -235,13 +300,14 @@ module.exports = (app) => {
             console.log(`400: BAD request`);
             return;
         }
-        db.update({ province, month }, { $set: newData }, {}, (err, numUpdated) => {
+        db.update({ province, month }, { $set: newData }, {_id: 0}, (err, numUpdated) => {
             if (err) {
                 response.status(500).send(err.message);
                 console.log(`500: ${err.message}`);
                 return;
             }
             if (numUpdated === 0) {
+                console.log(`newData = <${JSON.stringify(newData, null, 2)}>`);
                 response.status(404).send(`No se encontraron datos con la provincia ${province} y el mes ${month}`);
                 console.log(`404: No se encontraron datos con la provincia ${province} y el mes ${month}`);
                 return;
@@ -280,38 +346,129 @@ module.exports = (app) => {
     });
 
     //Borrar todos
-    app.delete(JLN,(request, response)=>{
-        db.remove({}, {multi:true},function (err, dbRemoved){
-            if(err){
+    app.delete(JLN, (request, response) => {
+        db.remove({}, { multi: true }, function (err, dbRemoved) {
+            if (err) {
                 console.log(`Error eliminando:  ${err}`);
                 response.sendStatus(500);
-            }else{
-                if(dbRemoved==0){
+            } else {
+                if (dbRemoved = 0) {
                     response.status(404).send("404: No se encontraron datos");
-                }
-                else{
-                    console.log(`Files removed ${dbRemoved}`);
+                } else {
+                    console.log(`datos eliminados ${dbRemoved}`);
                     response.sendStatus(200);
-                }               
+                }
             }
         });
     });
 
-    app.get(JLN+'/loadInitialData', (req, res) => {
-        if (operacion.arrayDatos.length === 0) {
-            db.insert(operacion.datosIni, (err, newDocs) => {
-                if (err) {
-                    res.status(500).send(err.message);
-                    console.log(`500: ${err.message}`);
-                    return;
+    app.get(JLN+'/loadInitialData', (request, response) => {
+        const datosIniciales = [
+            {
+                province: "Almeria",
+                month: "Enero",
+                traveler: 1708.999999997,
+                overnight_stay: 31879.000000006,
+                average_stay: 18.6535985957062
+            },
+            {
+                province: "Almeria",
+                month: "Febrero",
+                traveler: 1515,
+                overnight_stay: 25929.000000002,
+                average_stay: 17.1148514851385
+            },
+            {
+                province: "Almeria",
+                month: "Marzo",
+                traveler: 3045.000000001,
+                overnight_stay: 22178.999999999,
+                average_stay: 7.28374384236181
+            },
+            {
+                province: "Almeria",
+                month: "Abril",
+                traveler: 3992.999999999,
+                overnight_stay: 22219.000000005,
+                average_stay: 5.5644878537467
+            },
+            {
+                province: "Almeria",
+                month: "Mayo",
+                traveler: 7320.418502197,
+                overnight_stay: 25661.207048457,
+                average_stay: 3.50542896430792
+            },
+            {
+                province: "Almeria",
+                month: "Junio",
+                traveler: 13841.000000006,
+                overnight_stay: 41900.000000002,
+                average_stay: 3.02723791633436
+            },
+            {
+                province: "Almeria",
+                month: "Julio",
+                traveler: 24723.999999999,
+                overnight_stay: 94756.999999999,
+                average_stay: 3.83259181362251
+            },
+            {
+                province: "Almeria",
+                month: "Agosto",
+                traveler: 32583.999999996,
+                overnight_stay: 132277.999999994,
+                average_stay: 4.0595998035849
+            },
+            {
+                province: "Almeria",
+                month: "Septiembre",
+                traveler: 16595.999999999,
+                overnight_stay: 61046.000000001,
+                average_stay: 3.67835623041725 
+            },
+            {
+                province: "Almeria",    
+                month: "Octubre",
+                traveler: 13469.999999999,
+                overnight_stay: 53176.999999999,
+                average_stay: 3.94780994803288
+            },
+            {
+                province: "Almeria",
+                month: "Noviembre",
+                traveler: 6827.000000004,
+                overnight_stay: 46545.000000006,
+                average_stay: 6.81778233484382
+            },
+            {
+                province: "Almeria",
+                month: "Diciembre",
+                traveler: 8705.000000002,
+                overnight_stay: 61774.999999997,
+                average_stay: 7.09649626651152
+            }
+        ];
+        db.find({}, function(err,newData){
+            if(err){
+                console.log(`Error geting /apartment-occupancy-surveys/loadInitialData: ${err}`);
+                response.sendStatus(500);
+            }
+            else{
+                if(newData.length===0){
+                    console.log(`data inserted: ${datosIniciales.length}`);  
+                    db.insert(datosIniciales);
+                    response.json(datosIniciales.map((d)=>{
+                        delete d._id;
+                        return d;
+                    }));    
                 }
-                console.log(`Carga de datos iniciales realizada. Se insertaron ${newDocs.length} documentos`);
-                res.status(201).send(`Se insertaron ${newDocs.length} documentos`);
-            });
-        } else {
-            res.status(409).send('CONFLICT, el array ya tiene datos');
-            console.log(`El array ya tiene datos, tiene ${operacion.arrayDatos.length}`);
-        }
+                else{
+                     console.log(`Data is already inserted: ${newData.length}`);
+                     response.status(200).send("Data is already inserted");          
+                }
+            }
+        });
     });
 
     app.get(JLN+'/docs', (request,response) => {
